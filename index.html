@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>タスク管理アプリ</title>
+    <style>
+        .done{
+            text-decoration:line-through;
+        }
+    </style>
+    
+</head>
+
+<body>
+    <h1>タスク管理アプリ</h1>
+
+    <input type="text" id="taskInput" placeholder="タスクを入力">
+    <button id = "addButton">追加</button>
+    <button id = "deleteButton">削除</button>
+
+    <ul id="taskList">
+    </ul>
+
+    <script>
+        window.onload = function(){
+            loadTasks();
+        };
+
+        document.getElementById("addButton").onclick = function(){
+
+            let input = document.getElementById("taskInput");
+            let text = input.value;
+
+            if (text == ""){
+                alert("タスクを入力してください");
+                return;
+            }
+        
+            let list = document.getElementById("taskList");
+
+            let li = document.createElement("li");
+
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+        
+            checkbox.onclick = function() {
+                li.classList.toggle("done");
+                saveTasks();
+            };
+
+            li.appendChild(checkbox);
+
+            let textNode = document.createTextNode(" " + text);
+            li.appendChild(textNode);
+
+            list.appendChild(li);
+           
+            input.value = "";
+
+             saveTasks();
+
+            
+        };
+
+        document.getElementById("deleteButton").onclick = function(){
+            
+            let items = document.querySelectorAll("#taskList li");
+                let deleted = 0;
+
+            for (let i = 0; i < items.length; i++){
+                let checkbox = items[i].querySelector("input");
+
+                if( checkbox.checked){
+                    items[i].remove();
+                    deleted++;
+                }
+            }
+                saveTasks();
+
+                if (deleted > 0){
+                alert("削除が完了しました");
+            }else{
+                alert("削除するタスクを選択してください");
+            }
+        };
+
+            function saveTasks(){
+                let items = document.querySelectorAll("#taskList li");
+                let tasks = [];
+
+                for ( let i = 0; i < items.length; i++){
+                    let text = items[i].innerText.trim();
+                        tasks.push(text);
+                    }
+                    localStorage.setItem("tasks",JSON.stringify(tasks));
+                }
+                
+                function loadTasks(){
+                    let data = localStorage.getItem("tasks");
+                
+                    if (!data){
+                    return;
+                }              
+                let tasks = JSON.parse(data);
+                let list = document.getElementById("taskList");
+
+                for(let i = 0; i < tasks.length; i++){
+                    let li = document.createElement("li");
+                    
+                    let checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+
+                    checkbox.onclick  =function(){
+                        li.classList.toggle("done");
+                        saveTasks();
+                    };
+
+                    li.appendChild(checkbox);
+
+                    let textNode = document.createTextNode(" " + tasks[i]);
+                    li.appendChild( textNode);
+
+                    list.appendChild(li);
+                }
+              }
+        
+    </script>
+</body>
+</html>
